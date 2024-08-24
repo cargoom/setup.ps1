@@ -1,0 +1,36 @@
+# This script sets up a Windows environment with Chrome, 7-Zip, and Notepad++ and prepares the machine for Chrome Remote Desktop
+
+# Ensure running as admin
+If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "Please run this script as Administrator."
+    Exit
+}
+
+# Update system
+Write-Host "Updating the system..."
+Start-Process powershell -ArgumentList "sfc /scannow" -Verb runAs -Wait
+Start-Process powershell -ArgumentList "DISM /Online /Cleanup-Image /RestoreHealth" -Verb runAs -Wait
+
+# Install Google Chrome
+Write-Host "Installing Google Chrome..."
+$chromeInstaller = "$env:TEMP\chrome_installer.exe"
+Invoke-WebRequest -Uri "https://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile $chromeInstaller
+Start-Process $chromeInstaller -ArgumentList "/silent /install" -Wait
+
+# Install 7-Zip (ZIP utility)
+Write-Host "Installing 7-Zip..."
+$zipInstaller = "$env:TEMP\7zip_installer.exe"
+Invoke-WebRequest -Uri "https://www.7-zip.org/a/7z2107-x64.exe" -OutFile $zipInstaller
+Start-Process $zipInstaller -ArgumentList "/S" -Wait
+
+# Install Notepad++
+Write-Host "Installing Notepad++..."
+$notepadInstaller = "$env:TEMP\npp_installer.exe"
+Invoke-WebRequest -Uri "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.5/npp.8.5.Installer.exe" -OutFile $notepadInstaller
+Start-Process $notepadInstaller -ArgumentList "/S" -Wait
+
+# Set up Chrome Remote Desktop (optional)
+Write-Host "Setting up Chrome Remote Desktop..."
+Start-Process "https://remotedesktop.google.com/headless"
+
+Write-Host "Setup complete!"
